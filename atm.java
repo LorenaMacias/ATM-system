@@ -47,18 +47,10 @@ class account{
     System.out.println("Enter your account number: ");
     double accNum = scan.nextDouble();
     String accnum = String.format ("%.0f", accNum);
-    System.out.println(accnum);
     System.out.println("Enter your pin number: ");
     short pinNum = scan.nextShort();
     account a = new account();
-    if(a.check(accnum, pinNum) == 0){
-      System.out.println("Login successful");
-    }
-    else if(a.check(accnum, pinNum) == 1){
-      System.out.println("Account not found");
-      //closes program
-      System.exit(0);
-    }
+    a.check(accnum, pinNum);
   }//end of login function
   //creates an account
   void create(){
@@ -88,7 +80,7 @@ class account{
     } // end try/catch/finally
  }//end of create function
 
-  int check(String accNum, short pinNum){
+  void check(String accNum, short pinNum){
    //first we need to read in the file that contains accounts
    Vector<account> acc = new Vector<account>();
    try{
@@ -128,21 +120,99 @@ class account{
     accounts[i] = acc.get(i);
   };
   //now the REAL checking if account exists
+  int index = 0;
   for (int i = 0; i < accounts.length ; i++ ) {
     if(accounts[i].AccNum.equals(accNum) &&
-       accounts[i].PinNum == pinNum){return 0;}
+       accounts[i].PinNum == pinNum){
+         index = i;
+         System.out.println("Login successful");
+         break;
+       }
+    else if(i == accounts.length - 1){
+      System.out.println("Account not found");
+      //closes program
+      System.exit(0);
+    }
   }
-  //return false cause no match
-  return 1;
- }
+  money(accounts, index);
+  }//endo of check class
+  void money(account[] a, int i){
+    Scanner scan = new Scanner(System.in);
+    System.out.println("Hello, " + a[i].name + " ");
+    System.out.println("Balance: $" + a[i].balance);
+    System.out.print("Enter W to Withdraw or Enter D to Deposit: ");
+    char ch = scan.next().charAt(0);
+    switch (ch){
+      case 'W':
+      case 'w':{
+        elem e = new elem();
+        e.withdraw(a, i);
+        break;
+      }
+      case 'D':
+      case 'd':{
+        elem e = new elem();
+        e.deposit(a, i);
+        break;
+      }
+      default:
+        System.out.println("Invalid key");
+        break;
+    }
+  }
 }//end of account class
 
-/*//calculations
+//calculations
 class Math{
   float balance;
 }
-
 class elem extends Math{
+  void withdraw(account[] a, int i){
+    balance = a[i].balance;
+    Scanner scan = new Scanner(System.in);
+    System.out.println("How much would you like to withdraw? ");
+    float withdraw = scan.nextFloat();
+    if(balance < withdraw){
+      System.out.println("You cannot withdraw $" + withdraw);
+    }
+    else if(balance > withdraw && withdraw > 0){
+      balance -= withdraw;
+      System.out.println("You're new balance is: $" + balance);
+      a[i].balance = balance;
+      elem e = new elem();
+      e.newBalance(a);
+    }
+  }//end of withdrawl method
 
+  void deposit(account[] a, int i){
+    balance = a[i].balance;
+    Scanner scan = new Scanner(System.in);
+    System.out.println("Enter value of cash to desposit: ");
+    float deposit = scan.nextFloat();
+    balance += deposit;
+    System.out.println("New balance is: $" + balance);
+    a[i].balance = balance;
+    elem e = new elem();
+    e.newBalance(a);
+  }//end of deposit method
+
+  //deletes old file and makes new file with updated info
+  void newBalance(account[] a){
+    File file = new File("Accounts.txt");
+    file.delete();
+    try{
+    //create new file
+    FileWriter fw = new FileWriter("Accounts.txt");
+    PrintWriter pw = new PrintWriter(fw);
+    for (int j = 0; j < a.length; j++ ) {
+        pw.println(a[j].name);
+        pw.println(a[j].balance);
+        pw.println(a[j].AccNum);
+        pw.println(a[j].PinNum);
+    }
+    pw.close();
+  } catch (IOException e){
+    out.println("ERROR!");
+  }
+}//end of newBalance class
 }
-*/
