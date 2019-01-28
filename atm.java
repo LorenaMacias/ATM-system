@@ -1,6 +1,7 @@
 import java.util.Scanner;
 import java.io.*;
 import static java.lang.System.*;
+import java.util.Vector;
 
 class atm{
   public static void main(String args[]){
@@ -27,24 +28,36 @@ class account{
   String name, AccNum;
   short PinNum;
   float balance;
-  //my constructor
+  //constructor
   account(String n, float b, String a, short p){
     name = n;
     AccNum = a;
     PinNum = p;
     balance = b;
   }
-  account(){}
+  //defauult constructor
+   account(){
+   name = "";
+   AccNum = "";
+   PinNum = 0;
+   balance = 0;
+}
   Scanner scan = new Scanner(System.in);
   void login(){
     System.out.println("Enter your account number: ");
     double accNum = scan.nextDouble();
-    String accnum = String.valueOf(accNum);
+    String accnum = String.format ("%.0f", accNum);
+    System.out.println(accnum);
     System.out.println("Enter your pin number: ");
     short pinNum = scan.nextShort();
     account a = new account();
-    if(a.check(accnum, pinNum)){
-      System.out.println("Login succesfulk");
+    if(a.check(accnum, pinNum) == 0){
+      System.out.println("Login successful");
+    }
+    else if(a.check(accnum, pinNum) == 1){
+      System.out.println("Account not found");
+      //closes program
+      System.exit(0);
     }
   }//end of login function
   //creates an account
@@ -75,31 +88,33 @@ class account{
     } // end try/catch/finally
  }//end of create function
 
- public static boolean check(String accNum, short pinNum){
+  int check(String accNum, short pinNum){
    //first we need to read in the file that contains accounts
-   account[] accounts = new account[50];
+   Vector<account> acc = new Vector<account>();
    try{
    FileReader fr = new FileReader("Accounts.txt");
    BufferedReader br = new BufferedReader(fr);
    //using most of these variables for constructor
-   String str, name, an;
-   short pn;
-   float balance;
-   short count = 1, i = 0;
+   String str = "", name = "", an = "";
+   short pn = 0;
+   float balance = 0.0f;
+   short count = 1; //,i = 0;
    //account[] accounts = new account[50];
    while((str = br.readLine()) != null){
      if(count == 1) {name = str;}
      else if(count == 2) {
        //converts from string to float
        balance = Float.parseFloat(str);
+       //accounts[i].balance = balance;
      }
      else if(count == 3) {an = str;}
      else if(count == 4) {
      pn = Short.parseShort(str);
+     //add person info to array
+     acc.add(new account(name, balance, an, pn));
+     //i++;
      count = 1;
-     //add person to array
-     accounts[i] = new account(name, balance, an, pn);
-     i++;
+     continue;
      }
      count++;
    }
@@ -107,20 +122,24 @@ class account{
    } catch (IOException e){
    out.println("File not found");
   }
-  //now to do the real checking
+  //create an array and copy contents from vector to array
+  account[] accounts = new account[acc.size()];
+  for (int i = 0; i < acc.size();i++) {
+    accounts[i] = acc.get(i);
+  };
+  //now the REAL checking if account exists
   for (int i = 0; i < accounts.length ; i++ ) {
-    //if account found, login successfull
-    if(accounts[i].AccNum == accNum &&
-       accounts[i].PinNum == pinNum){return true;}
+    if(accounts[i].AccNum.equals(accNum) &&
+       accounts[i].PinNum == pinNum){return 0;}
   }
   //return false cause no match
-  return false;
+  return 1;
  }
 }//end of account class
 
-/*
+/*//calculations
 class Math{
-
+  float balance;
 }
 
 class elem extends Math{
