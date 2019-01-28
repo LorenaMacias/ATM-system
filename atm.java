@@ -3,6 +3,7 @@ import java.io.*;
 import static java.lang.System.*;
 import java.util.Vector;
 
+
 class atm{
   public static void main(String args[]){
     //ask to log into account or create
@@ -16,7 +17,7 @@ class atm{
         break;
       case 9:
         a.create();
-        System.out.println("Finished creating account, please log in");
+        a.login();
         break;
       default:
         System.out.println("Invalid input");
@@ -138,10 +139,14 @@ class account{
   }//endo of check class
   void money(account[] a, int i){
     Scanner scan = new Scanner(System.in);
+    System.out.println("-----------------------------");
     System.out.println("Hello, " + a[i].name + " ");
     System.out.println("Balance: $" + a[i].balance);
-    System.out.print("Enter W to Withdraw or Enter D to Deposit: ");
-    char ch = scan.next().charAt(0);
+    char ch;
+    do{
+    System.out.print("Enter W to Withdraw, D to Deposit, or E to Exit: ");
+
+    ch = scan.next().charAt(0);
     switch (ch){
       case 'W':
       case 'w':{
@@ -155,10 +160,15 @@ class account{
         e.deposit(a, i);
         break;
       }
+      case 'E':
+      case 'e':
+        break;
       default:
         System.out.println("Invalid key");
         break;
     }
+  }while(ch != 'E' && ch != 'e');
+  System.out.println("Goodbye");
   }
 }//end of account class
 
@@ -178,6 +188,7 @@ class elem extends Math{
     else if(balance > withdraw && withdraw > 0){
       balance -= withdraw;
       System.out.println("You're new balance is: $" + balance);
+      System.out.println("-----------------------------");
       a[i].balance = balance;
       elem e = new elem();
       e.newBalance(a);
@@ -191,6 +202,7 @@ class elem extends Math{
     float deposit = scan.nextFloat();
     balance += deposit;
     System.out.println("New balance is: $" + balance);
+    System.out.println("-----------------------------");
     a[i].balance = balance;
     elem e = new elem();
     e.newBalance(a);
@@ -214,5 +226,5 @@ class elem extends Math{
   } catch (IOException e){
     out.println("ERROR!");
   }
-}//end of newBalance class
-}
+}//end of newBalance method
+}//end of elem class
