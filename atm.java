@@ -1,12 +1,12 @@
+package atmpack;
 import java.util.Scanner;
 import java.io.*;
 import static java.lang.System.*;
 import java.util.Vector;
 
-
 class atm{
   public static void main(String args[]){
-    //ask to log into account or create
+    //ask to log into account or createn
     Scanner scan = new Scanner(System.in);
     System.out.println("Welcome, please enter 1 to log in or enter 9 to create an account");
     int num = scan.nextInt();
@@ -17,7 +17,6 @@ class atm{
         break;
       case 9:
         a.create();
-        a.login();
         break;
       default:
         System.out.println("Invalid input");
@@ -62,6 +61,11 @@ class account{
     double accNum = scan.nextDouble();
     //convert from scientific notation to string
     String acNum = String.format ("%.0f", accNum);
+    account a = new account();
+    if (a.checkAcc(acNum) == 0) {
+      System.out.println("That account number is already in use");
+      return;
+    }
     System.out.println("Enter your pin number: ");
     short pinNum = scan.nextShort();
     //this adds the person into the existing list
@@ -79,7 +83,29 @@ class account{
          bw.close();
        } catch (IOException ioe2) {}
     } // end try/catch/finally
+    System.out.println("-----------------------------");
+    System.out.println("Please log in");
+    a.login();
  }//end of create function
+
+  int checkAcc(String acNum){
+   Vector<account> acc = new Vector<account>();
+   try{
+   FileReader fr = new FileReader("Accounts.txt");
+   BufferedReader br = new BufferedReader(fr);
+   //using most of these variables for constructor
+   String str;
+   while((str = br.readLine()) != null){
+     if(acNum.equals(str)){
+       return 0;
+     }
+    }
+   br.close();
+   } catch (IOException e){
+   out.println("File not found");
+  }
+  return 1;
+ }
 
   void check(String accNum, short pinNum){
    //first we need to read in the file that contains accounts
@@ -91,14 +117,12 @@ class account{
    String str = "", name = "", an = "";
    short pn = 0;
    float balance = 0.0f;
-   short count = 1; //,i = 0;
-   //account[] accounts = new account[50];
+   short count = 1;
    while((str = br.readLine()) != null){
      if(count == 1) {name = str;}
      else if(count == 2) {
        //converts from string to float
        balance = Float.parseFloat(str);
-       //accounts[i].balance = balance;
      }
      else if(count == 3) {an = str;}
      else if(count == 4) {
